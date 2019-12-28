@@ -1,0 +1,49 @@
+#!/bin/bash
+#Metboard version 0.4a - first version separate from .bashrc
+#12.27.19 - Changing location of BPM mp3s
+#11.10.19 - got all lines of code commented
+#11.14.19 - now using mpg321 instead of play(1)
+		#volume level reset to normal.
+		#play repeat is infinite
+
+. ~/songs #importing the file that stores all our shorthand names, their BPMs, and optional full titles
+
+
+function met {
+        stime=$(date '+%l:%M:%S') #BPM start time
+        b=$SECONDS #saving the number of seconds elapsed since last met command
+        SECONDS=0; #and starting a new count
+        t=$1 #this value is always a BPM, even if the user entered a shorthand name
+        mpg321 BPMs/Songmaven-Click-Track-$t-BPM.mp3 -l 0 -K; #the code we all came to hear
+	#everything after this point does not execute until the metronome has been cancelled
+        s=$SECONDS #saving the amount of seconds the met ran for
+        b=$(TZ=UTC0 printf '%(%Mm%Ss)T\n' $b) #time since met was last started
+        e=$(TZ=UTC0 printf '%(%Mm%Ss)T\n' $s) #time that met ran for
+        stime=$(date '+%l:%M') #BPM start time ... again?
+        date=$(date '+%m%d%y') #current date
+        log=~/setlogs/$date.txt; #naming our log file after the current date
+                if [ ! -d ~/setlogs ] #making sure the directory we save them to exists
+                then mkdir ~/setlogs #and creating it if not
+                fi
+        touch $log; #create the day's log file if it does not exist already
+        unset text #this variable will become an unaliased version of what the user entered
+                if [ $(history 1 | cut -b 12-19) -eq "$1" ] #if entry is numerical
+                then unset fullname  #then it would be redundant to log
+                else
+                text="$(echo "$@" |cut -d ' ' -f 2-)" #setting variable for shorthand entry and matching it to a full title if poss
+                        if [ "$text" -eq "$1" ] #checking if said var returns just a tempo or also a full title
+                        then fullname=$(history 1 | cut -b 13-19) #shorthand has no full title saved
+                        else fullname=$(echo "$@" |cut -d ' ' -f 2-) #shorthand does have full title saved
+                        fi
+                fi
+        echo "$b" >> $log; #write downtime to log
+        echo "$e ($t) $fullname" >> $log; #write running length to log
+        SECONDS=0; #starting timer of seconds untill next playbac
+        }
+
+function songs { sudo nano songs; } #bring up list of songs to edit
+function sname { echo "$1=$t" >> songs; source .bashrc; } #save BPM by shorthand name
+function r { met $t; } #resume previous BPM
+function showlog { nano $log; } #show the day's log
+function tst { mpg321 Desktop/met/test.mp3; } #test sound
+function gdate { gdate=$(date '+%m%d%y'); } #current date
