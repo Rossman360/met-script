@@ -18,7 +18,7 @@ function met {
         b=$SECONDS #saving the number of seconds elapsed since last met command
         SECONDS=0; #and starting a new count
         t=$1 #this value is always a BPM, even if the user entered a shorthand name
-        afplay -v 100 met/bpms/Songmaven-Click-Track-$t-BPM.mp3; #the code we all came to hear
+        mpg321 met/bpms/Songmaven-Click-Track-$t-BPM.mp3 -l 0 -K; #the code we all came to hear
 	#everything after this point does not execute until the metronome has been cancelled
         s=$SECONDS #saving the amount of seconds the met ran for
         b=$(TZ=UTC0 printf '%(%Mm%Ss)T\n' $b) #time since met was last started
