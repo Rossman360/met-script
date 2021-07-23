@@ -45,7 +45,7 @@ function met {
         SECONDS=0; #starting timer of seconds untill next playbac
         }
 
-function songs { sudo nano songs; } #bring up list of songs to edit
+function songs { nano met/songs; } #bring up list of songs to edit
 function sname { echo "$1=$t" >> songs; source .bashrc; } #save BPM by shorthand name
 function r { met $t; } #resume previous BPM
 function showlog { nano $log; } #show the day's log
